@@ -67,6 +67,14 @@ def _mad_available():
     else:
         return True
 
+def _aubio_available():
+    """Determines whether python aubio is available."""
+    try:
+        import aubio  # noqa
+    except ImportError:
+        return False
+    else:
+        return True
 
 def audio_open(path):
     """Open an audio file using a library that is available on this
@@ -100,6 +108,14 @@ def audio_open(path):
         from . import maddec
         try:
             return maddec.MadAudioFile(path)
+        except DecodeError:
+            pass
+
+    # aubio
+    if _aubio_available():
+        from . import aubioread
+        try:
+            return aubioread.AubioSource(path)
         except DecodeError:
             pass
 
